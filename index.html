@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סידור ארוחות, ראש השנה תשפ"ז</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F7EFD9;
+    --card: #FFFDF8;
+    --ink: #2B2318;
+    --ink-soft: #6B5F4C;
+    --pomegranate: #A02B3E;
+    --pomegranate-dark: #7C1F2E;
+    --honey: #C99A3C;
+    --honey-dark: #A67C25;
+    --olive: #5F6B3F;
+    --line: #E6D9B8;
+    --filled-bg: #F1F6EC;
+    --filled-border: #9CB37B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(160,43,62,0.06), transparent 40%),
+      radial-gradient(circle at 95% 100%, rgba(201,154,60,0.10), transparent 45%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Rubik', sans-serif;
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    position:relative;
+  }
+  h1{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:900;
+    font-size:clamp(28px, 5vw, 44px);
+    margin:0 0 6px;
+    color:var(--pomegranate-dark);
+    letter-spacing:0.5px;
+  }
+  .subtitle{
+    color:var(--ink-soft);
+    font-size:16px;
+    margin:0 0 18px;
+  }
+
+  .user-bar{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+    font-size:15px;
+    color:var(--ink-soft);
+  }
+  .user-bar > span{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .user-bar b{color:var(--ink);}
+  .participants-line{
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .link-btn{
+    background:none;
+    border:none;
+    color:var(--pomegranate);
+    font-family:inherit;
+    font-size:14px;
+    cursor:pointer;
+    text-decoration:underline;
+    padding:2px 4px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin:20px 0 30px;
+  }
+  .export-btn{
+    background:var(--honey-dark);
+    color:#FFF8EA;
+    border:none;
+    border-radius:10px;
+    padding:13px 26px;
+    font-family:'Rubik', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 3px 0 rgba(0,0,0,0.12);
+    transition:transform .12s ease;
+  }
+  .export-btn:hover{transform:translateY(-1px);}
+  .export-btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.12);}
+
+  .save-status{
+    text-align:center;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 18px;
+  }
+  .save-status.ok{color:var(--olive);}
+  .save-status.error{color:var(--pomegranate-dark);font-weight:600;}
+
+  .board{
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+  }
+  .day-group{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .day-title{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:24px;
+    font-weight:700;
+    color:var(--pomegranate-dark);
+    margin:0;
+    padding-inline-start:4px;
+    border-inline-start:5px solid var(--honey-dark);
+    padding-inline-end:10px;
+  }
+  .day-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:18px;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    border:1px solid var(--line);
+    padding:18px 16px 16px;
+    box-shadow:0 2px 10px rgba(90,60,20,0.06);
+    border-top:5px solid var(--accent, var(--pomegranate));
+  }
+  .card-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0 0 14px;
+  }
+  .cat-title-input{
+    flex:1 1 auto;
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:20px;
+    font-weight:700;
+    color:var(--ink);
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:7px;
+    padding:4px 6px;
+    min-width:0;
+  }
+  .cat-title-input:hover, .cat-title-input:focus{
+    border-color:var(--line);
+    background:#fff;
+    outline:none;
+  }
+
+  ul.items{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px;}
+  li.food{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:8px 10px;
+    background:#FFFEFC;
+  }
+  input.name-input{
+    flex:1 1 auto;
+    font-size:15px;
+    min-width:0;
+    border:1px solid transparent;
+    border-radius:7px;
+    padding:5px 7px;
+    background:transparent;
+    font-family:'Rubik',sans-serif;
+    color:var(--ink);
+  }
+  input.name-input:hover, input.name-input:focus{
+    border-color:var(--line);
+    background:#fff;
+    outline:none;
+  }
+  .who-wrap{display:flex;align-items:center;gap:5px;flex:0 0 auto;}
+  .actions-wrap{display:flex;align-items:center;gap:2px;flex:0 0 auto;}
+  .icon-btn{
+    border:none;
+    background:none;
+    color:var(--ink-soft);
+    cursor:pointer;
+    padding:3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:6px;
+    line-height:0;
+  }
+  .icon-btn svg{width:15px;height:15px;display:block;}
+  .icon-btn:hover{background:#F1E6C8;color:var(--pomegranate);}
+  input.qty-input{
+    width:44px;
+    flex:0 0 auto;
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:6px 4px;
+    font-family:'Rubik',sans-serif;
+    font-size:13px;
+    text-align:center;
+    background:#fff;
+    color:var(--ink);
+  }
+  input.who-input{
+    width:112px;
+    max-width:32vw;
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:6px 8px;
+    font-family:'Rubik',sans-serif;
+    font-size:13px;
+    background:#fff;
+    color:var(--ink);
+  }
+  input.who-input.filled{
+    background:var(--filled-bg);
+    border-color:var(--filled-border);
+    font-weight:500;
+  }
+  .add-category-wrap{
+    display:flex;
+    justify-content:center;
+    margin-top:22px;
+  }
+  .add-category-btn{
+    border:1px dashed var(--honey-dark);
+    background:transparent;
+    color:var(--honey-dark);
+    border-radius:10px;
+    padding:11px 22px;
+    font-size:15px;
+    font-family:'Rubik',sans-serif;
+    cursor:pointer;
+  }
+  .add-category-btn:hover{background:#FFF6E2;}
+
+  .add-row{
+    display:flex;
+    gap:6px;
+    margin-top:4px;
+  }
+  .add-row input{
+    flex:1 1 auto;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px 10px;
+    font-family:'Rubik',sans-serif;
+    font-size:14px;
+  }
+  .add-row button{
+    border:none;
+    background:var(--olive);
+    color:#fff;
+    border-radius:8px;
+    padding:8px 14px;
+    font-size:14px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .add-row button:hover{background:#4b5432;}
+
+  .empty-hint{color:var(--ink-soft);font-size:13px;padding:4px 2px 8px;}
+
+  .toast{
+    position:fixed;
+    bottom:22px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--pomegranate-dark);
+    color:#fff;
+    padding:9px 20px;
+    border-radius:20px;
+    font-size:14px;
+    opacity:0;
+    transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .modal-bg{
+    position:fixed;inset:0;
+    background:rgba(43,35,24,0.45);
+    display:flex;align-items:center;justify-content:center;
+    z-index:100;
+    padding:16px;
+  }
+  .modal{
+    background:var(--card);
+    border-radius:16px;
+    padding:28px 24px;
+    max-width:360px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  }
+  .modal h3{
+    font-family:'Frank Ruhl Libre', serif;
+    margin:0 0 8px;
+    font-size:21px;
+    color:var(--pomegranate-dark);
+  }
+  .modal p{color:var(--ink-soft);font-size:14px;margin:0 0 16px;}
+  .modal input{
+    width:100%;
+    padding:11px 12px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    font-size:15px;
+    font-family:'Rubik',sans-serif;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .modal button{
+    width:100%;
+    border:none;
+    background:var(--pomegranate);
+    color:#fff;
+    padding:11px;
+    border-radius:9px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .modal button:hover{background:var(--pomegranate-dark);}
+
+  .loading{
+    text-align:center;
+    color:var(--ink-soft);
+    padding:60px 0;
+    font-size:15px;
+  }
+
+  footer.note{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    margin-top:36px;
+    line-height:1.7;
+  }
+
+  @media (max-width:480px){
+    li.food{
+      flex-wrap:wrap;
+      row-gap:8px;
+    }
+    input.name-input{
+      flex:1 1 100%;
+      order:-1;
+      font-weight:500;
+    }
+    .who-wrap{
+      order:2;
+      flex:1 1 auto;
+    }
+    input.who-input{
+      width:auto;
+      flex:1 1 auto;
+      max-width:none;
+    }
+    input.qty-input{
+      order:1;
+    }
+    .actions-wrap{
+      order:3;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ראש השנה תשפ"ז</h1>
+    <p class="subtitle">סידור ארוחות, מי מביא מה לחג</p>
+    <div class="user-bar" id="userBar"></div>
+  </header>
+
+  <div class="toolbar">
+    <button class="export-btn" id="exportBtn">הורדת טבלה לוורד, להדפסה</button>
+    <button class="link-btn" id="restoreBtn">שחזור מאכלים שנמחקו</button>
+  </div>
+
+  <p class="save-status" id="saveStatus">השינויים נשמרים אוטומטית ברשימה המשותפת.</p>
+
+  <div id="board" class="board">
+    <div class="loading">טוען את הרשימה...</div>
+  </div>
+
+  <div class="add-category-wrap">
+    <button class="add-category-btn" id="addCategoryBtn" type="button">הוספת רובריקה חדשה</button>
+  </div>
+
+  <footer class="note">הרשימה משותפת לכל מי שפותח את הקובץ, כל שינוי שמישהו שומר יופיע גם אצל האחרים.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // כתובת ה-Web App של Google Apps Script, יש להדביק כאן אחרי הפריסה
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8jwTb9DOLoZjjzCxj-eTNo_C39U6yASIhtfnf29X13XW7ELvOg4vSE0Zu18bJK4qlTw/exec';
+
+  const DEFAULT_DATA = {
+    categories: [
+      { id:'erev-a', title:'ערב יום א׳ (שבת)', items:[
+        'תפוח בדבש','תמרים','רימונים','חסה','סלק','סלט גזר','מרק עוף','אטריות',
+        'עוף','עוף בתנור','אורז לבן, קוסקוס או תפוח אדמה','קיש כרישה','רסק תפוחי עץ'
+      ]},
+      { id:'boker-a', title:'בוקר יום א׳ (שבת)', items:[
+        'מטבוחה','פלפלים','חצילים','פסטו','טחינה','סלט חסה ופירות','סלט כרוב',
+        'סלט קשים','חמין','שניצלים','עוף','אורז','שעועית','אורז','נקטר מנגו'
+      ]},
+      { id:'erev-b', title:'ערב יום ב׳', items:[
+        'שהחיינו על תמרים','תפוח בדבש','רימונים','חסה ועגבניות','סלק','גזר',
+        'מרק כתום','מרק ירקות','סלומון','מושט','כרוב ממולא','כרובית וברוקולי',
+        'עוגת גבינה','גלידוניות'
+      ]},
+      { id:'boker-b', title:'בוקר יום ב׳', items:[
+        'מטבוחה','פלפלים','חצילים','פסטו','טחינה','זיתים','סלט כרוב','סלט חסה',
+        'מרק קוסקוס','קוסקוס','צלי בשר','קציצות בשר ועוף','שניצלים',
+        'תפוח אדמה מבושל','רסק תפוחי עץ'
+      ]},
+      { id:'cakes', title:'עוגות', hasQuantity:true, items:[
+        'חלות','עוגות דבש','עוגת גבינה','כדורי תמרים','עוגיות','עוגת תפוחים','עוגת שמרים'
+      ]}
+    ]
+  };
+
+  function makeItemsWithIds(cat){
+    return cat.items.map((name, i) => ({ id: cat.id + '-d' + i, name, who:'', qty:'' }));
+  }
+  function buildDefault(){
+    return {
+      categories: DEFAULT_DATA.categories.map(c => ({
+        id:c.id, title:c.title, hasQuantity: !!c.hasQuantity, items: makeItemsWithIds(c)
+      }))
+    };
+  }
+
+  let state = null;
+  let myName = '';
+  let idCounter = 1;
+  let participants = [];
+
+  const board = document.getElementById('board');
+  const userBar = document.getElementById('userBar');
+  const toastEl = document.getElementById('toast');
+  const saveStatusEl = document.getElementById('saveStatus');
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=> toastEl.classList.remove('show'), 1500);
+  }
+
+  function setSaveStatus(text, kind){
+    saveStatusEl.textContent = text;
+    saveStatusEl.className = 'save-status' + (kind ? ' ' + kind : '');
+  }
+
+  function newId(catId){
+    idCounter++;
+    return catId + '-n' + Date.now() + '-' + idCounter;
+  }
+
+  async function saveName(name){
+    myName = name;
+    await addParticipant(name);
+  }
+
+  async function callScript(payload){
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  async function fetchAll(){
+    const res = await fetch(SCRIPT_URL + '?action=getAll');
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  async function addParticipant(name){
+    const trimmed = name.trim();
+    if(!trimmed) return;
+    if(!participants.some(p => p === trimmed)){
+      participants.push(trimmed);
+      renderUserBar();
+      try{
+        await callScript({ type:'addParticipant', name:trimmed });
+      }catch(e){
+        console.error('שגיאה בשמירת שם המשתתף', e);
+      }
+    }
+  }
+
+  let loadError = false;
+
+  async function loadData(){
+    if(!SCRIPT_URL || SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
+      loadError = true;
+      state = buildDefault();
+      return;
+    }
+    try{
+      const data = await fetchAll();
+      state = (data && data.menu) ? data.menu : buildDefault();
+      participants = (data && data.participants) ? data.participants : [];
+      if(!data || !data.menu){
+        // הפעלה ראשונה של הסקריפט, אין עדיין נתונים שמורים בו
+        await saveData(false);
+      }
+    }catch(e){
+      console.error('שגיאה בטעינה מהשרת', e);
+      loadError = true;
+      state = buildDefault();
+    }
+  }
+
+  async function saveData(showToast){
+    if(loadError){
+      setSaveStatus('לא ניתן לשמור כרגע, בדקו את החיבור ורעננו את הדף', 'error');
+      toast('לא ניתן לשמור כרגע');
+      return;
+    }
+    try{
+      await callScript({ type:'saveMenu', data:state });
+      const timeStr = new Date().toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' });
+      setSaveStatus('נשמר בהצלחה בשעה ' + timeStr, 'ok');
+      if(showToast) toast('נשמר');
+    }catch(e){
+      console.error('שגיאה בשמירה', e);
+      setSaveStatus('שגיאה בשמירה: ' + (e && e.message ? e.message : 'לא ידועה') + ', נסו שוב', 'error');
+      toast('שמירה נכשלה, נסו שוב');
+    }
+  }
+
+  async function restoreMissingFoods(){
+    const defaults = buildDefault();
+    defaults.categories.forEach(defCat => {
+      let cat = state.categories.find(c => c.id === defCat.id);
+      if(!cat){
+        state.categories.push(defCat);
+        return;
+      }
+      if(cat.hasQuantity === undefined) cat.hasQuantity = defCat.hasQuantity;
+      defCat.items.forEach(defItem => {
+        const exists = cat.items.some(i => i.name.trim() === defItem.name.trim());
+        if(!exists){
+          cat.items.push({ id:newId(cat.id), name:defItem.name, who:'', qty:'' });
+        }
+      });
+    });
+    await saveData(false);
+    renderBoard();
+    toast('המאכלים המקוריים חזרו');
+  }
+
+  function renderUserBar(){
+    userBar.innerHTML = '';
+    if(myName){
+      const row = document.createElement('span');
+      const nameSpan = document.createElement('span');
+      nameSpan.innerHTML = 'שלום, <b>' + escapeHtml(myName) + '</b>';
+      const change = document.createElement('button');
+      change.className = 'link-btn';
+      change.textContent = 'שינוי שם';
+      change.onclick = () => openNameModal(true);
+      row.appendChild(nameSpan);
+      row.appendChild(change);
+      userBar.appendChild(row);
+    }
+    if(participants.length > 0){
+      const partLine = document.createElement('div');
+      partLine.className = 'participants-line';
+      partLine.textContent = 'משתתפים: ' + participants.join(', ');
+      userBar.appendChild(partLine);
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  const accentByIndex = ['var(--pomegranate)','var(--honey-dark)','var(--olive)','var(--pomegranate)','var(--honey-dark)'];
+
+  const GROUPS = [
+    { title:'יום ראשון', catIds:['erev-a','boker-a'] },
+    { title:'יום שני', catIds:['erev-b','boker-b'] },
+    { title:'עוגות', catIds:['cakes'] }
+  ];
+
+  function buildCategoryCard(cat, idx){
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.setProperty('--accent', accentByIndex[idx % accentByIndex.length]);
+
+      const head = document.createElement('div');
+      head.className = 'card-head';
+
+      const titleInput = document.createElement('input');
+      titleInput.className = 'cat-title-input';
+      titleInput.type = 'text';
+      titleInput.value = cat.title;
+      titleInput.addEventListener('input', () => {
+        cat.title = titleInput.value;
+      });
+      titleInput.addEventListener('change', async () => {
+        cat.title = titleInput.value.trim() || cat.title;
+        titleInput.value = cat.title;
+        await saveData(true);
+      });
+      titleInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') titleInput.blur(); });
+
+      head.appendChild(titleInput);
+      card.appendChild(head);
+
+      const ul = document.createElement('ul');
+      ul.className = 'items';
+
+      if(cat.items.length === 0){
+        const hint = document.createElement('div');
+        hint.className = 'empty-hint';
+        hint.textContent = 'עדיין אין כאן מאכלים, אפשר להוסיף למטה.';
+        card.appendChild(hint);
+      }
+
+      cat.items.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'food';
+
+        const nameInput = document.createElement('input');
+        nameInput.className = 'name-input';
+        nameInput.type = 'text';
+        nameInput.value = item.name;
+        nameInput.addEventListener('input', () => {
+          item.name = nameInput.value;
+        });
+        nameInput.addEventListener('change', async () => {
+          item.name = nameInput.value.trim() || item.name;
+          nameInput.value = item.name;
+          await saveData(true);
+        });
+        nameInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') nameInput.blur(); });
+
+        let qtyInput = null;
+        if(cat.hasQuantity){
+          qtyInput = document.createElement('input');
+          qtyInput.className = 'qty-input';
+          qtyInput.type = 'text';
+          qtyInput.placeholder = 'כמות';
+          qtyInput.value = item.qty || '';
+          qtyInput.addEventListener('input', () => {
+            item.qty = qtyInput.value;
+          });
+          qtyInput.addEventListener('change', async () => {
+            item.qty = qtyInput.value.trim();
+            await saveData(true);
+          });
+          qtyInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') qtyInput.blur(); });
+        }
+
+        const whoWrap = document.createElement('div');
+        whoWrap.className = 'who-wrap';
+
+        const whoInput = document.createElement('input');
+        whoInput.className = 'who-input' + (item.who ? ' filled' : '');
+        whoInput.type = 'text';
+        whoInput.placeholder = 'מי מביא?';
+        whoInput.value = item.who || '';
+        whoInput.addEventListener('focus', () => {
+          if(!whoInput.value){
+            if(myName){
+              whoInput.value = myName;
+              item.who = myName;
+            }else{
+              openNameModal(false);
+            }
+          }
+        });
+        whoInput.addEventListener('input', () => {
+          item.who = whoInput.value;
+          whoInput.className = 'who-input' + (whoInput.value ? ' filled' : '');
+        });
+        whoInput.addEventListener('change', async () => {
+          item.who = whoInput.value.trim();
+          whoInput.className = 'who-input' + (item.who ? ' filled' : '');
+          await saveData(true);
+        });
+        whoInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter') whoInput.blur();
+        });
+
+        whoWrap.appendChild(whoInput);
+
+        const actionsWrap = document.createElement('div');
+        actionsWrap.className = 'actions-wrap';
+
+        const dupBtn = document.createElement('button');
+        dupBtn.className = 'icon-btn';
+        dupBtn.type = 'button';
+        dupBtn.title = 'שכפול מאכל';
+        dupBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M4 16V5a1 1 0 0 1 1-1h11"></path></svg>';
+        dupBtn.onclick = async () => {
+          const idx2 = cat.items.findIndex(i => i.id === item.id);
+          const copy = { id:newId(cat.id), name:item.name, who:'', qty:'' };
+          cat.items.splice(idx2 + 1, 0, copy);
+          await saveData(true);
+          renderBoard();
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'icon-btn';
+        delBtn.type = 'button';
+        delBtn.title = 'מחיקת מאכל';
+        delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+        delBtn.onclick = async () => {
+          cat.items = cat.items.filter(i => i.id !== item.id);
+          await saveData(true);
+          renderBoard();
+        };
+
+        actionsWrap.appendChild(dupBtn);
+        actionsWrap.appendChild(delBtn);
+
+        li.appendChild(actionsWrap);
+        li.appendChild(whoWrap);
+        if(qtyInput) li.appendChild(qtyInput);
+        li.appendChild(nameInput);
+        ul.appendChild(li);
+      });
+
+      card.appendChild(ul);
+
+      const addRow = document.createElement('div');
+      addRow.className = 'add-row';
+      const addInput = document.createElement('input');
+      addInput.type = 'text';
+      addInput.placeholder = 'הוספת מאכל';
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.textContent = 'הוספה';
+
+      async function addItem(){
+        const name = addInput.value.trim();
+        if(!name) return;
+        cat.items.push({ id:newId(cat.id), name, who:'', qty:'' });
+        addInput.value = '';
+        await saveData(true);
+        renderBoard();
+      }
+      addBtn.onclick = addItem;
+      addInput.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') addItem();
+      });
+
+      addRow.appendChild(addBtn);
+      addRow.appendChild(addInput);
+      card.appendChild(addRow);
+
+      return card;
+  }
+
+  function renderBoard(){
+    board.innerHTML = '';
+    let globalIdx = 0;
+    const usedIds = new Set();
+
+    GROUPS.forEach(group => {
+      const catsInGroup = group.catIds
+        .map(id => state.categories.find(c => c.id === id))
+        .filter(Boolean);
+      if(catsInGroup.length === 0) return;
+      catsInGroup.forEach(c => usedIds.add(c.id));
+
+      const section = document.createElement('div');
+      section.className = 'day-group';
+
+      if(catsInGroup.length > 1 || catsInGroup[0].title !== group.title){
+        const h2 = document.createElement('h2');
+        h2.className = 'day-title';
+        h2.textContent = group.title;
+        section.appendChild(h2);
+      }
+
+      const cardsWrap = document.createElement('div');
+      cardsWrap.className = 'day-cards';
+      catsInGroup.forEach(cat => {
+        cardsWrap.appendChild(buildCategoryCard(cat, globalIdx));
+        globalIdx++;
+      });
+      section.appendChild(cardsWrap);
+      board.appendChild(section);
+    });
+
+    const extraCats = state.categories.filter(c => !usedIds.has(c.id));
+    if(extraCats.length > 0){
+      const section = document.createElement('div');
+      section.className = 'day-group';
+      const h2 = document.createElement('h2');
+      h2.className = 'day-title';
+      h2.textContent = 'רובריקות נוספות';
+      section.appendChild(h2);
+      const cardsWrap = document.createElement('div');
+      cardsWrap.className = 'day-cards';
+      extraCats.forEach(cat => {
+        cardsWrap.appendChild(buildCategoryCard(cat, globalIdx));
+        globalIdx++;
+      });
+      section.appendChild(cardsWrap);
+      board.appendChild(section);
+    }
+  }
+
+  function openNameModal(isChange){
+    const bg = document.createElement('div');
+    bg.className = 'modal-bg';
+    bg.innerHTML =
+      '<div class="modal">' +
+        '<h3>' + (isChange ? 'שינוי שם' : 'איך קוראים לך') + '</h3>' +
+        '<p>השם ישמש למילוי מהיר של "מי מביא" בביקור הזה, ויתווסף לרשימת המשתתפים המשותפת. בכל כניסה חדשה יהיה צריך להזין אותו שוב.</p>' +
+        '<input type="text" id="nameInput" placeholder="השם שלך" />' +
+        '<button id="nameSaveBtn">שמירה</button>' +
+      '</div>';
+    document.body.appendChild(bg);
+    const input = bg.querySelector('#nameInput');
+    input.value = myName || '';
+    input.focus();
+    const save = async () => {
+      const val = input.value.trim();
+      if(!val) return;
+      await saveName(val);
+      renderUserBar();
+      document.body.removeChild(bg);
+    };
+    bg.querySelector('#nameSaveBtn').onclick = save;
+    input.addEventListener('keydown', (e) => { if(e.key === 'Enter') save(); });
+  }
+
+  function buildGroupTable(cats, groupTitle, showGroupTitle){
+    const maxRows = Math.max(...cats.map(c => c.items.length), 0);
+    let rows = '';
+    for(let r = 0; r < maxRows; r++){
+      rows += '<tr>';
+      cats.forEach(cat => {
+        const item = cat.items[r];
+        const nameText = item ? (item.qty ? escapeHtml(item.name) + ' (' + escapeHtml(item.qty) + ')' : escapeHtml(item.name)) : '';
+        rows += '<td style="padding:6px 10px;border:1px solid #ccc;">' + nameText + '</td>';
+        rows += '<td style="padding:6px 10px;border:1px solid #ccc;color:#555;">' + (item && item.who ? escapeHtml(item.who) : '') + '</td>';
+      });
+      rows += '</tr>';
+    }
+    let headerRow = '<tr>';
+    cats.forEach(cat => {
+      headerRow += '<th style="padding:8px 10px;border:1px solid #ccc;background:#f3e6c8;">' + escapeHtml(cat.title) + '</th>';
+      headerRow += '<th style="padding:8px 10px;border:1px solid #ccc;background:#f3e6c8;">מי מביא</th>';
+    });
+    headerRow += '</tr>';
+
+    return (
+      (showGroupTitle ? '<h3 style="color:#A67C25;margin:22px 0 8px;">' + escapeHtml(groupTitle) + '</h3>' : '') +
+      '<table style="border-collapse:collapse;width:100%;font-size:13px;">' +
+        '<thead>' + headerRow + '</thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>'
+    );
+  }
+
+  function buildWordTable(){
+    const usedIds = new Set();
+    let sections = '';
+
+    GROUPS.forEach(group => {
+      const catsInGroup = group.catIds
+        .map(id => state.categories.find(c => c.id === id))
+        .filter(Boolean);
+      if(catsInGroup.length === 0) return;
+      catsInGroup.forEach(c => usedIds.add(c.id));
+      const showTitle = catsInGroup.length > 1 || catsInGroup[0].title !== group.title;
+      sections += buildGroupTable(catsInGroup, group.title, showTitle);
+    });
+
+    const extraCats = state.categories.filter(c => !usedIds.has(c.id));
+    if(extraCats.length > 0){
+      sections += buildGroupTable(extraCats, 'רובריקות נוספות', true);
+    }
+
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('he-IL');
+
+    return (
+      '<div style="font-family:Arial, sans-serif; direction:rtl; text-align:right;">' +
+      '<h2 style="color:#7C1F2E;">תפריט ראש השנה תשפ"ז, סידור ארוחות ומי מביא מה</h2>' +
+      '<p style="color:#777;font-size:12px;">הופק בתאריך ' + dateStr + '</p>' +
+      sections +
+      '<p style="margin-top:24px;">בעז"ה שיהיה בהצלחה, שנה טובה ומתוקה, כתיבה וחתימה טובה, בשורות טובות וישועות גדולות לעם ישראל.</p>' +
+      '</div>'
+    );
+  }
+
+  function exportToWord(){
+    if(document.activeElement && typeof document.activeElement.blur === 'function'){
+      document.activeElement.blur();
+    }
+    const content = buildWordTable();
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+      "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+      "xmlns='http://www.w3.org/TR/REC-html40'>" +
+      "<head><meta charset='utf-8'><title>תפריט ראש השנה תשפז</title></head><body>";
+    const footer = "</body></html>";
+    const sourceHTML = header + content + footer;
+
+    const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'תפריט ראש השנה תשפז.doc';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', exportToWord);
+  document.getElementById('restoreBtn').addEventListener('click', restoreMissingFoods);
+
+  document.getElementById('addCategoryBtn').addEventListener('click', async () => {
+    const catId = 'cat-' + Date.now();
+    state.categories.push({ id:catId, title:'רובריקה חדשה', items:[] });
+    await saveData(true);
+    renderBoard();
+  });
+
+  async function init(){
+    await loadData();
+    renderUserBar();
+    renderBoard();
+    if(loadError){
+      setSaveStatus('לא ניתן להתחבר כרגע לשרת הנתונים, הטבלה שמוצגת היא הרשימה הבסיסית ולא תסתנכרן עד שהחיבור יתוקן', 'error');
+    }
+    openNameModal(false);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

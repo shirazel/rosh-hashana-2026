@@ -495,9 +495,24 @@
     return catId + '-n' + Date.now() + '-' + idCounter;
   }
 
+  const LOCAL_NAME_KEY = 'rh-menu-my-name';
+
   async function saveName(name){
     myName = name;
+    try{
+      localStorage.setItem(LOCAL_NAME_KEY, name);
+    }catch(e){
+      console.error('שגיאה בשמירת השם בדפדפן', e);
+    }
     await addParticipant(name);
+  }
+
+  function getSavedLocalName(){
+    try{
+      return localStorage.getItem(LOCAL_NAME_KEY) || '';
+    }catch(e){
+      return '';
+    }
   }
 
   async function callScript(payload){
@@ -856,7 +871,7 @@
     bg.innerHTML =
       '<div class="modal">' +
         '<h3>' + (isChange ? 'שינוי שם' : 'איך קוראים לך') + '</h3>' +
-        '<p>השם ישמש למילוי מהיר של "מי מביא" בביקור הזה, ויתווסף לרשימת המשתתפים המשותפת. בכל כניסה חדשה יהיה צריך להזין אותו שוב.</p>' +
+        '<p>השם ישמש למילוי מהיר של "מי מביא", ויתווסף לרשימת המשתתפים המשותפת. הוא ייזכר בדפדפן הזה, ולא יהיה צריך להזין אותו שוב באותו מכשיר ודפדפן.</p>' +
         '<input type="text" id="nameInput" placeholder="השם שלך" />' +
         '<button id="nameSaveBtn">שמירה</button>' +
       '</div>';
@@ -971,12 +986,19 @@
 
   async function init(){
     await loadData();
+    const savedName = getSavedLocalName();
+    if(savedName){
+      myName = savedName;
+      await addParticipant(savedName);
+    }
     renderUserBar();
     renderBoard();
     if(loadError){
       setSaveStatus('לא ניתן להתחבר כרגע לשרת הנתונים, הטבלה שמוצגת היא הרשימה הבסיסית ולא תסתנכרן עד שהחיבור יתוקן', 'error');
     }
-    openNameModal(false);
+    if(!savedName){
+      openNameModal(false);
+    }
     startAutoRefresh();
   }
 

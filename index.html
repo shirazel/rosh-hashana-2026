@@ -977,6 +977,39 @@
       setSaveStatus('לא ניתן להתחבר כרגע לשרת הנתונים, הטבלה שמוצגת היא הרשימה הבסיסית ולא תסתנכרן עד שהחיבור יתוקן', 'error');
     }
     openNameModal(false);
+    startAutoRefresh();
+  }
+
+  function isEditingNow(){
+    const el = document.activeElement;
+    if(!el) return false;
+    const tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA';
+  }
+
+  function startAutoRefresh(){
+    setInterval(async () => {
+      if(loadError) return;
+      if(isEditingNow()) return;
+      try{
+        const data = await fetchAll();
+        if(!data || !data.menu) return;
+        const newStr = JSON.stringify(data.menu);
+        const newParticipants = data.participants || [];
+        const changed = newStr !== JSON.stringify(state) ||
+          JSON.stringify(newParticipants) !== JSON.stringify(participants);
+        if(changed){
+          state = data.menu;
+          participants = newParticipants;
+          renderBoard();
+          renderUserBar();
+          setSaveStatus('הרשימה עודכנה כרגע משינוי של מישהו אחר', 'ok');
+        }
+      }catch(e){
+        // תקלת רשת זמנית ברענון האוטומטי, לא מציגים שגיאה כדי לא להטריד
+        console.error('שגיאה ברענון אוטומטי', e);
+      }
+    }, 25000);
   }
 
   init();

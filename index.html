@@ -883,21 +883,21 @@
       cats.forEach(cat => {
         const item = cat.items[r];
         const nameText = item ? (item.qty ? escapeHtml(item.name) + ' (' + escapeHtml(item.qty) + ')' : escapeHtml(item.name)) : '';
-        rows += '<td style="padding:6px 10px;border:1px solid #ccc;">' + nameText + '</td>';
-        rows += '<td style="padding:6px 10px;border:1px solid #ccc;color:#555;">' + (item && item.who ? escapeHtml(item.who) : '') + '</td>';
+        rows += '<td style="padding:6px 10px;border:1px solid #ccc;font-size:12pt;">' + nameText + '</td>';
+        rows += '<td style="padding:6px 10px;border:1px solid #ccc;color:#555;font-size:12pt;">' + (item && item.who ? escapeHtml(item.who) : '') + '</td>';
       });
       rows += '</tr>';
     }
     let headerRow = '<tr>';
     cats.forEach(cat => {
-      headerRow += '<th style="padding:8px 10px;border:1px solid #ccc;background:#f3e6c8;">' + escapeHtml(cat.title) + '</th>';
-      headerRow += '<th style="padding:8px 10px;border:1px solid #ccc;background:#f3e6c8;">מי מביא</th>';
+      headerRow += '<th style="padding:8px 10px;border:1px solid #ccc;background:#f3e6c8;font-size:12pt;">' + escapeHtml(cat.title) + '</th>';
+      headerRow += '<th style="padding:8px 10px;border:1px solid #ccc;background:#f3e6c8;font-size:12pt;">מי מביא</th>';
     });
     headerRow += '</tr>';
 
     return (
-      (showGroupTitle ? '<h3 style="color:#A67C25;margin:22px 0 8px;">' + escapeHtml(groupTitle) + '</h3>' : '') +
-      '<table style="border-collapse:collapse;width:100%;font-size:13px;">' +
+      (showGroupTitle ? '<h3 style="color:#A67C25;margin:22px 0 8px;font-size:14pt;">' + escapeHtml(groupTitle) + '</h3>' : '') +
+      '<table style="border-collapse:collapse;width:100%;font-size:12pt;">' +
         '<thead>' + headerRow + '</thead>' +
         '<tbody>' + rows + '</tbody>' +
       '</table>'
@@ -928,10 +928,10 @@
 
     return (
       '<div style="font-family:Arial, sans-serif; direction:rtl; text-align:right;">' +
-      '<h2 style="color:#7C1F2E;">תפריט ראש השנה תשפ"ז, סידור ארוחות ומי מביא מה</h2>' +
-      '<p style="color:#777;font-size:12px;">הופק בתאריך ' + dateStr + '</p>' +
+      '<h2 style="color:#7C1F2E;font-size:14pt;">תפריט ראש השנה תשפ"ז, סידור ארוחות ומי מביא מה</h2>' +
+      '<p style="color:#777;font-size:12pt;">הופק בתאריך ' + dateStr + '</p>' +
       sections +
-      '<p style="margin-top:24px;">בעז"ה שיהיה בהצלחה, שנה טובה ומתוקה, כתיבה וחתימה טובה, בשורות טובות וישועות גדולות לעם ישראל.</p>' +
+      '<p style="margin-top:24px;font-size:12pt;">בעז"ה שיהיה בהצלחה, שנה טובה ומתוקה, כתיבה וחתימה טובה, בשורות טובות וישועות גדולות לעם ישראל.</p>' +
       '</div>'
     );
   }

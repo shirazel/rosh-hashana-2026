@@ -377,6 +377,14 @@
     cursor:pointer;
   }
   .modal button:hover{background:var(--pomegranate-dark);}
+  .modal button.secondary{
+    background:none;
+    color:var(--ink-soft);
+    font-weight:400;
+    text-decoration:underline;
+    margin-top:8px;
+  }
+  .modal button.secondary:hover{background:none;color:var(--pomegranate);}
 
   .loading{
     text-align:center;
@@ -943,11 +951,98 @@
       '<div class="modal">' +
         '<h3>מה ' + escapeHtml(myName) + ' צריך/ה להביא</h3>' +
         listHtml +
-        '<button id="summaryCloseBtn">סגירה</button>' +
+        (myItems.length > 0 ? '<button id="summaryImageBtn">שמירה כתמונה</button>' : '') +
+        '<button id="summaryCloseBtn" class="secondary">סגירה</button>' +
       '</div>';
     document.body.appendChild(bg);
     bg.querySelector('#summaryCloseBtn').onclick = () => document.body.removeChild(bg);
     bg.addEventListener('click', (e) => { if(e.target === bg) document.body.removeChild(bg); });
+    const imgBtn = bg.querySelector('#summaryImageBtn');
+    if(imgBtn){
+      imgBtn.onclick = () => downloadSummaryImage(myName, myItems);
+    }
+  }
+
+  async function downloadSummaryImage(name, items){
+    if(document.fonts && document.fonts.ready){
+      try{ await document.fonts.ready; }catch(e){}
+    }
+
+    const width = 640;
+    const rowHeight = 56;
+    const headerHeight = 150;
+    const footerHeight = 50;
+    const height = headerHeight + items.length * rowHeight + footerHeight;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.direction = 'rtl';
+
+    // רקע
+    ctx.fillStyle = '#F7EFD9';
+    ctx.fillRect(0, 0, width, height);
+
+    // פס עליון
+    ctx.fillStyle = '#A02B3E';
+    ctx.fillRect(0, 0, width, 8);
+
+    // כותרת
+    ctx.fillStyle = '#7C1F2E';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = '700 30px Rubik, Arial, sans-serif';
+    ctx.fillText('ראש השנה תשפ"ז', width / 2, 55);
+    ctx.font = '600 22px Rubik, Arial, sans-serif';
+    ctx.fillStyle = '#2B2318';
+    ctx.fillText('מה ' + name + ' צריך/ה להביא', width / 2, 95);
+
+    ctx.strokeStyle = '#E6D9B8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, headerHeight - 20);
+    ctx.lineTo(width - 40, headerHeight - 20);
+    ctx.stroke();
+
+    // שורות המאכלים
+    ctx.textAlign = 'right';
+    let y = headerHeight + 20;
+    items.forEach((item, idx) => {
+      const rowTop = y - 30;
+      if(idx % 2 === 0){
+        ctx.fillStyle = 'rgba(160,43,62,0.04)';
+        ctx.fillRect(30, rowTop, width - 60, rowHeight - 6);
+      }
+      ctx.fillStyle = '#2B2318';
+      ctx.font = '600 19px Rubik, Arial, sans-serif';
+      const nameText = item.qty ? item.name + ' (' + item.qty + ')' : item.name;
+      ctx.fillText(nameText, width - 50, y);
+
+      ctx.fillStyle = '#8A7A5C';
+      ctx.font = '400 14px Rubik, Arial, sans-serif';
+      ctx.fillText(item.catTitle, width - 50, y + 20);
+
+      y += rowHeight;
+    });
+
+    // כותרת תחתונה
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#8A7A5C';
+    ctx.font = '400 13px Rubik, Arial, sans-serif';
+    ctx.fillText('סידור ארוחות לראש השנה', width / 2, height - 18);
+
+    canvas.toBlob((blob) => {
+      if(!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'מה ' + name + ' מביא.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 'image/png');
   }
 
   function buildGroupTable(cats, groupTitle, showGroupTitle){

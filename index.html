@@ -332,6 +332,29 @@
     color:var(--pomegranate-dark);
   }
   .modal p{color:var(--ink-soft);font-size:14px;margin:0 0 16px;}
+  .summary-list{
+    list-style:none;
+    margin:0 0 16px;
+    padding:0;
+    max-height:50vh;
+    overflow-y:auto;
+    text-align:right;
+  }
+  .summary-list li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    border-bottom:1px solid var(--line);
+    padding:9px 2px;
+    font-size:14px;
+  }
+  .summary-list li b{color:var(--ink);}
+  .summary-list li span{
+    color:var(--ink-soft);
+    font-size:12px;
+    white-space:nowrap;
+  }
   .modal input{
     width:100%;
     padding:11px 12px;
@@ -408,6 +431,7 @@
 
   <div class="toolbar">
     <button class="export-btn" id="exportBtn">הורדת טבלה לוורד, להדפסה</button>
+    <button class="link-btn" id="mySummaryBtn">מה אני צריך/ה להביא</button>
     <button class="link-btn" id="restoreBtn">שחזור מאכלים שנמחקו</button>
   </div>
 
@@ -890,6 +914,42 @@
     input.addEventListener('keydown', (e) => { if(e.key === 'Enter') save(); });
   }
 
+  function openMySummary(){
+    if(!myName){
+      openNameModal(false);
+      return;
+    }
+    const myItems = [];
+    state.categories.forEach(cat => {
+      cat.items.forEach(item => {
+        if((item.who || '').trim() === myName.trim()){
+          myItems.push({ catTitle:cat.title, name:item.name, qty:item.qty });
+        }
+      });
+    });
+
+    const bg = document.createElement('div');
+    bg.className = 'modal-bg';
+    let listHtml;
+    if(myItems.length === 0){
+      listHtml = '<p>עדיין לא שיבצת את עצמך לאף מאכל. אפשר לחזור ללוח ולמלא "מי מביא" ליד מה שאתם מביאים.</p>';
+    }else{
+      listHtml = '<ul class="summary-list">' + myItems.map(i =>
+        '<li><b>' + escapeHtml(i.name) + (i.qty ? ' (' + escapeHtml(i.qty) + ')' : '') + '</b><span>' + escapeHtml(i.catTitle) + '</span></li>'
+      ).join('') + '</ul>';
+    }
+
+    bg.innerHTML =
+      '<div class="modal">' +
+        '<h3>מה ' + escapeHtml(myName) + ' צריך/ה להביא</h3>' +
+        listHtml +
+        '<button id="summaryCloseBtn">סגירה</button>' +
+      '</div>';
+    document.body.appendChild(bg);
+    bg.querySelector('#summaryCloseBtn').onclick = () => document.body.removeChild(bg);
+    bg.addEventListener('click', (e) => { if(e.target === bg) document.body.removeChild(bg); });
+  }
+
   function buildGroupTable(cats, groupTitle, showGroupTitle){
     const maxRows = Math.max(...cats.map(c => c.items.length), 0);
     let rows = '';
@@ -976,6 +1036,7 @@
 
   document.getElementById('exportBtn').addEventListener('click', exportToWord);
   document.getElementById('restoreBtn').addEventListener('click', restoreMissingFoods);
+  document.getElementById('mySummaryBtn').addEventListener('click', openMySummary);
 
   document.getElementById('addCategoryBtn').addEventListener('click', async () => {
     const catId = 'cat-' + Date.now();
